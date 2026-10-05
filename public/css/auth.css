@@ -1,0 +1,997 @@
+/* ==========================================================================
+   CHATIFY — AUTH PAGES (Sign In / Sign Up / Forgot Password / OTP / Reset)
+   Shared split-screen layout + form control styling.
+
+   Sections:
+   1. Tokens & base
+   2. Layout (shell, brand panel, form panel)
+   3. Form controls (fields, errors, checkbox, button, divider, social)
+   4. Sign up additions
+   5. Forgot password additions
+   6. OTP verification (page + modal)
+   7. Reset password additions
+   8. Keyframes
+   9. Responsive (all breakpoints in one place)
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TOKENS & BASE
+   ========================================================================== */
+:root {
+  /* Color */
+  --primary:        #14b8ae;
+  --primary-dark:   #0d7d76;
+  --primary-light:  #5eead4;
+  --primary-tint:   #e6f7f5;
+  --ink:            #0f2027;
+  --ink-soft:       #45585c;
+  --muted:          #6b8280;
+  --background:     #ffffff;
+  --surface:        #f4faf9;
+  --surface-alt:    #eef6f5;
+  --border:         #dbe8e6;
+  --danger:         #e35d5d;
+
+  /* Type */
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(15, 32, 39, 0.06);
+  --shadow-md: 0 8px 24px rgba(13, 125, 118, 0.12);
+  --shadow-lg: 0 24px 60px rgba(13, 125, 118, 0.18);
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+.auth-body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--background);
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   2. LAYOUT
+   ========================================================================== */
+.auth-shell {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ----- Left brand panel ----- */
+.auth-panel {
+  position: relative;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(94, 234, 212, 0.35) 0%, transparent 55%),
+    linear-gradient(160deg, var(--primary-dark) 0%, var(--primary) 65%, #1fd6c9 100%);
+  color: #ffffff;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  top: -140px;
+  right: -140px;
+}
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  bottom: -100px;
+  left: -80px;
+}
+
+.auth-brand { position: relative; z-index: 1; }
+.auth-brand-name { color: #ffffff; }
+
+.auth-panel-copy {
+  position: relative;
+  z-index: 1;
+  margin: 40px 0;
+}
+.auth-panel-copy h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.9rem;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+}
+.auth-panel-copy p {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 360px;
+  margin: 0;
+}
+
+.auth-preview-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+}
+.auth-preview-stack .bubble-in {
+  background: rgba(255, 255, 255, 0.95);
+}
+.auth-preview-stack .bubble-out {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+}
+.auth-preview-stack .avatar {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.auth-panel-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ----- Right form panel ----- */
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 400px;
+  opacity: 0;
+  animation: rise 0.6s var(--ease-out) 0.1s forwards;
+}
+
+.auth-brand-mobile {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.auth-header { margin-bottom: 22px; }
+.auth-header h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.auth-header p {
+  color: var(--muted);
+  font-size: 0.94rem;
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. FORM CONTROLS
+   ========================================================================== */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-group label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inline-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  transition: color 0.2s ease;
+}
+.inline-link:hover { color: var(--primary); text-decoration: underline; }
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px 10px 40px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--background);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-wrap input::placeholder { color: #a7bcba; }
+
+.input-wrap input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-tint);
+}
+
+.input-wrap.has-error input {
+  border-color: var(--danger);
+}
+.input-wrap.has-error input:focus {
+  box-shadow: 0 0 0 4px rgba(227, 93, 93, 0.12);
+}
+
+.input-icon {
+  position: absolute;
+  left: 13px;
+  color: var(--muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.input-trailing-btn {
+  position: absolute;
+  right: 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.input-trailing-btn:hover { background: var(--surface); color: var(--primary-dark); }
+
+/* Errors take zero space until they are shown */
+.field-error {
+  display: none;
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin: 0;
+}
+.field-error.visible {
+  display: block;
+  animation: error-in 0.2s ease;
+}
+
+.field-group.shake { animation: shake 0.4s ease; }
+.otp-box.shake { animation: shake 0.4s ease; }
+
+/* ----- Checkbox ----- */
+.field-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.checkbox-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox-wrap input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.checkbox-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+.checkbox-box::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.15s ease;
+  margin-bottom: 2px;
+}
+.checkbox-wrap input:checked + .checkbox-box {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.checkbox-wrap input:checked + .checkbox-box::after { transform: rotate(45deg) scale(1); }
+.checkbox-wrap input:focus-visible + .checkbox-box { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
+
+.checkbox-label { font-size: 0.86rem; color: var(--ink-soft); }
+
+/* ----- Submit button w/ loading state ----- */
+.auth-submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+  position: relative;
+}
+.btn-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin-center 0.7s linear infinite;
+}
+.auth-submit.loading .btn-label { opacity: 0; }
+.auth-submit.loading .btn-spinner {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ----- Divider ----- */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 2px 0;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ----- Social buttons ----- */
+.social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--background);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s var(--ease-out);
+}
+.btn-social:hover {
+  border-color: var(--primary-light);
+  background: var(--primary-tint);
+  transform: translateY(-1px);
+}
+.btn-social i { font-size: 1rem; }
+
+/* ----- Switch link ----- */
+.auth-switch {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.auth-switch a {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+.auth-switch a:hover { text-decoration: underline; }
+
+/* ==========================================================================
+   4. SIGN UP — additions
+   ========================================================================== */
+.auth-form-wrap-wide { max-width: 460px; }
+
+/* Two-column field pairs (Full name / Username, Email / Phone) */
+.field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Social-proof stat row in the left panel */
+.auth-stat-row {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 28px;
+}
+.auth-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.auth-stat-avatars { display: inline-flex; }
+.stat-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid var(--primary);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -10px;
+}
+.stat-avatar:first-child { margin-left: 0; }
+.auth-stat strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+.auth-stat span {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Password strength meter */
+.strength-meter {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+}
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--border);
+  transition: background 0.25s ease;
+}
+.strength-label {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin: 4px 0 0;
+  transition: color 0.2s ease;
+}
+
+.strength-meter.weak [data-bar="1"] { background: var(--danger); }
+.strength-meter.weak ~ .strength-label,
+.strength-label.weak { color: var(--danger); }
+
+.strength-meter.fair [data-bar="1"],
+.strength-meter.fair [data-bar="2"] { background: #e8a13d; }
+.strength-label.fair { color: #b97a1e; }
+
+.strength-meter.good [data-bar="1"],
+.strength-meter.good [data-bar="2"],
+.strength-meter.good [data-bar="3"] { background: var(--primary-light); }
+.strength-label.good { color: var(--primary-dark); }
+
+.strength-meter.strong [data-bar="1"],
+.strength-meter.strong [data-bar="2"],
+.strength-meter.strong [data-bar="3"],
+.strength-meter.strong [data-bar="4"] { background: var(--primary); }
+.strength-label.strong { color: var(--primary-dark); }
+
+/* Terms checkbox needs top-aligned box since label text wraps */
+.terms-check {
+  align-items: flex-start;
+  margin-top: 2px;
+}
+.terms-check .checkbox-box { margin-top: 2px; }
+.terms-check .checkbox-label { line-height: 1.45; }
+.terms-check .inline-link { font-size: inherit; font-weight: 600; }
+
+/* ==========================================================================
+   5. FORGOT PASSWORD — additions
+   ========================================================================== */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 24px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.back-link:hover { color: var(--primary-dark); transform: translateX(-2px); }
+
+/* Left-panel icon badges (key = forgot/reset, otp = verification) */
+.auth-key-icon,
+.auth-otp-icon {
+  position: relative;
+  z-index: 1;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #fff;
+  margin-bottom: 28px;
+  animation: key-float 4s ease-in-out infinite;
+}
+
+/* ----- Confirmation state ----- */
+.confirm-section {
+  text-align: center;
+  opacity: 0;
+  animation: rise 0.5s var(--ease-out) forwards;
+}
+
+.confirm-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: var(--primary-tint);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  animation: confirm-pop 0.5s var(--ease-out) 0.1s backwards;
+}
+
+.confirm-section h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0 0 10px;
+  color: var(--ink);
+}
+
+.confirm-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 26px;
+}
+.confirm-text strong { color: var(--ink); }
+
+.resend-row {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin: 18px 0 4px;
+}
+
+.inline-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.inline-link-btn:hover { color: var(--primary); text-decoration: underline; }
+.inline-link-btn:disabled {
+  color: var(--muted);
+  cursor: default;
+  text-decoration: none;
+}
+
+.resend-timer {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.change-email-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.84rem;
+}
+
+/* ==========================================================================
+   6. OTP VERIFICATION — page + modal
+   ========================================================================== */
+
+/* Copy line that echoes the destination email back to the user */
+.auth-header .otp-destination {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* 6-box OTP input row — boxes are fluid so they never overflow on small screens */
+.otp-input-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.otp-box {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: 52px;
+  height: 54px;
+  text-align: center;
+  padding: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--ink);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--background);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  -moz-appearance: textfield;
+}
+.otp-box::-webkit-outer-spin-button,
+.otp-box::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.otp-box:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-tint);
+}
+.otp-box.filled { border-color: var(--primary-light); }
+
+.otp-box.error {
+  border-color: var(--danger);
+  animation: shake 0.4s ease;
+}
+.otp-box.error:focus {
+  box-shadow: 0 0 0 4px rgba(227, 93, 93, 0.12);
+}
+
+.otp-box.success {
+  border-color: var(--primary);
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+}
+
+/* ----- OTP modal (popup/dialog variant) ----- */
+.otp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 35, 32, 0.55);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.otp-modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.otp-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;              /* stays centered, scrolls safely on short screens */
+  background: var(--background);
+  border-radius: var(--r-md);
+  box-shadow: 0 24px 60px -16px rgba(15, 107, 98, 0.4);
+  padding: 36px 32px 30px;
+  text-align: center;
+  transform: translateY(14px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.28s var(--ease-out), opacity 0.28s ease;
+}
+.otp-modal-overlay.active .otp-modal-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.otp-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.otp-modal-close:hover { background: var(--surface); color: var(--ink); }
+
+/* Icon badge at top of modal */
+.otp-modal-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 18px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.4rem;
+  box-shadow: 0 8px 18px -6px rgba(15, 107, 98, 0.5);
+}
+
+.otp-modal-card h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+
+.otp-modal-subtitle {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.otp-modal-error {
+  display: none;
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin: 0;
+}
+.otp-modal-error.visible {
+  display: block;
+  margin-top: 10px;
+  animation: error-in 0.2s ease;
+}
+
+.otp-modal-card .auth-submit { margin-top: 20px; }
+.otp-modal-card .resend-row { margin: 18px 0 0; }
+
+.otp-modal-footnote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 20px 0 0;
+}
+
+/* ==========================================================================
+   7. RESET PASSWORD (new password) — additions
+   ========================================================================== */
+
+/* Live password requirement checklist under the new-password field */
+.password-requirements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 2px;
+}
+
+.req-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.req-item i {
+  font-size: 5px;
+  color: var(--border);
+  transition: color 0.2s ease;
+}
+
+.req-item.met { color: var(--primary-dark); }
+.req-item.met i { color: var(--primary); }
+
+/* Redirect / countdown row shown on the success state */
+.redirect-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.mini-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--primary-tint);
+  border-top-color: var(--primary-dark);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.progress-track {
+  margin: 18px auto 0;
+  width: 100%;
+  max-width: 260px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--surface-alt);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+  transition: width 2.4s linear;
+}
+
+/* ==========================================================================
+   8. KEYFRAMES
+   ========================================================================== */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes error-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(3px); }
+}
+
+/* Plain spin (inline spinners) */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Spin for the absolutely-centered button spinner */
+@keyframes spin-center {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes key-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-6px) rotate(-4deg); }
+}
+
+@keyframes confirm-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ==========================================================================
+   9. RESPONSIVE
+   Bootstrap's lg breakpoint is 992px, so the panel hides at 991.98px to stay
+   in sync with .d-lg-none on the mobile logo.
+   ========================================================================== */
+
+/* Small desktops: slimmer left panel padding */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .auth-panel { padding: 32px 28px; }
+}
+
+/* Tablet & below: single column, brand panel hidden */
+@media (max-width: 991.98px) {
+  .auth-shell { grid-template-columns: 1fr; }
+  .auth-panel { display: none; }
+  .auth-form-panel { padding: 40px 20px; }
+}
+
+/* Sign-up field pairs stack on narrow screens */
+@media (max-width: 540px) {
+  .field-pair { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+  .auth-form-wrap,
+  .auth-form-wrap-wide { max-width: 100%; }
+
+  .auth-header h1 { font-size: 1.5rem; }
+
+  /* 16px prevents iOS Safari from zooming on focus */
+  .input-wrap input { min-height: 48px; font-size: 16px; }
+
+  .social-row { grid-template-columns: 1fr; }
+
+  .otp-input-row { gap: 6px; }
+  .otp-box { height: 48px; font-size: 1.15rem; }
+
+  .otp-modal-overlay { padding: 14px; }
+  .otp-modal-card { padding: 28px 18px 22px; }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .auth-form-wrap,
+  .confirm-section,
+  .confirm-icon,
+  .auth-key-icon,
+  .auth-otp-icon {
+    animation: none;
+    opacity: 1;
+  }
+}

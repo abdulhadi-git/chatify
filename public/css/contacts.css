@@ -1,0 +1,643 @@
+/* ==========================================================================
+   CHATIFY — contacts.css
+   Contacts list + right-side profile panel. Reuses the same design tokens
+   (--primary, --ink, --border, fonts, radii...) as chats.css so the page
+   matches the rest of the app, but re-declares them so it also works
+   standalone.
+   ========================================================================== */
+:root {
+  --primary: #14b8ae;
+  --primary-dark: #0d7d76;
+  --primary-light: #5eead4;
+  --primary-tint: #e6f7f5;
+  --ink: #0f2027;
+  --ink-soft: #45585c;
+  --muted: #6b8280;
+  --background: #ffffff;
+  --surface: #f4faf9;
+  --surface-alt: #eef6f5;
+  --border: #dbe8e6;
+  --danger: #e35d5d;
+  --danger-tint: #fceaea;
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --shadow-sm: 0 1px 2px rgba(15, 32, 39, 0.06);
+  --shadow-md: 0 8px 24px rgba(13, 125, 118, 0.12);
+  --shadow-lg: 0 24px 60px rgba(13, 125, 118, 0.18);
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rail-collapsed: 76px;
+  --list-width: 360px;
+  --rail-expanded: 232px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.contacts-body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--background);
+}
+
+.contacts-app {
+  display: flex;
+  height: 100vh;
+  padding-left: var(--rail-collapsed);
+}
+
+/* ==========================================================================
+   CONTACTS LIST PANEL
+   ========================================================================== */
+.contacts-list-panel {
+  width: var(--list-width);
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+.contacts-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 14px;
+}
+
+.contacts-list-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.contacts-list-header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.icon-btn:hover {
+  background: var(--surface-alt);
+  color: var(--primary-dark);
+}
+
+.contacts-search {
+  margin: 0 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  color: var(--muted);
+}
+
+.contacts-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.contacts-search input::placeholder {
+  color: #a7bcba;
+}
+
+.contacts-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease;
+}
+
+.contact-item:hover {
+  background: var(--surface);
+}
+
+.contact-item.active {
+  background: var(--primary-tint);
+  border-left-color: var(--primary);
+}
+
+.contact-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contact-item-name {
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-item-username {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-item-arrow {
+  color: var(--muted);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.contacts-empty-list {
+  padding: 30px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   PROFILE PANEL
+   ========================================================================== */
+.contact-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  position: relative;
+}
+
+.contact-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+  gap: 6px;
+  padding: 40px;
+}
+
+.contact-empty-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.contact-empty-state h2 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+}
+
+.contact-empty-state p {
+  max-width: 320px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.contact-profile {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-profile-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 22px;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.contact-profile-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 20px 24px;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-profile-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 6px 0 0;
+}
+
+.contact-profile-username {
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.contact-profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: var(--background);
+  border-bottom: 8px solid var(--surface);
+}
+
+.profile-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 84px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+}
+
+.profile-action-btn.disabled.loading {
+  color: var(--muted) !important;
+  pointer-events: none !important;
+  background: var(--surface) !important;
+}
+.empty-list{
+  display: flex;
+  color: var(--muted);
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  font-size: 14px;
+}
+
+.profile-action-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px; /* center karne ke liye */
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-action-btn i {
+  font-size: 1.15rem;
+}
+
+.profile-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.profile-action-btn.primary {
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+}
+
+.profile-action-btn.primary:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.profile-action-btn.danger {
+  color: var(--danger);
+}
+
+.profile-action-btn.danger:hover {
+  background: var(--danger-tint);
+}
+
+
+.contact-profile-details {
+  padding: 8px 24px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-row i {
+  width: 20px;
+  text-align: center;
+  color: var(--primary-dark);
+  font-size: 1rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.detail-row>div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detail-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.detail-value {
+  font-size: 0.9rem;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .contacts-list-panel {
+    width: 300px;
+  }
+}
+
+
+/* ==========================================================================
+   FRIEND REQUESTS MODAL
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 32, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fr-fade-in 0.18s var(--ease-out);
+}
+
+@keyframes fr-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.friend-requests-modal {
+  width: 400px;
+  max-width: 92vw;
+  max-height: 78vh;
+  background: var(--background);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fr-pop-in 0.2s var(--ease-out);
+}
+
+@keyframes fr-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.friend-requests-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.friend-requests-modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.friend-requests-body {
+  overflow-y: auto;
+  padding: 6px 0 12px;
+  min-height: 160px;
+}
+
+.friend-requests-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.friend-request-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+.friend-request-item .avatar img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-request-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.friend-request-item-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-request-item-username {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.fr-loading,
+.fr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.fr-empty i {
+  font-size: 1.8rem;
+  color: var(--primary-dark);
+}
+
+.fr-loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+}
+
+.fr-spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--surface-alt);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+.fr-spinner-sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+/* ==========================================================================
+   FRIEND REQUEST ITEM — ACCEPT / REJECT BUTTONS
+   ========================================================================== */
+.fr-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fr-action-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+}
+
+.fr-accept-btn {
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+}
+
+.fr-accept-btn:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.fr-reject-btn {
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+
+.fr-reject-btn:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.fr-action-btn:disabled,
+.fr-action-btn.disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.fr-action-btn.loading i {
+  visibility: hidden;
+}
+
+.fr-action-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+/* jab dono buttons ek sath disable hon (ek pr click hote he) */
+.friend-request-item.fr-row-busy {
+  opacity: 0.6;
+}

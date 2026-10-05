@@ -1,0 +1,475 @@
+/* ==========================================================================
+   CHATIFY — discover.css
+   Discover page: search bar + paginated user results (left) + profile
+   panel (right). Reuses design tokens from groups.css / chats.css / auth.css.
+   Re-declared here so this page also works standalone.
+   ========================================================================== */
+:root {
+  --primary:        #14b8ae;
+  --primary-dark:   #0d7d76;
+  --primary-light:  #5eead4;
+  --primary-tint:   #e6f7f5;
+  --ink:            #0f2027;
+  --ink-soft:       #45585c;
+  --muted:          #6b8280;
+  --background:     #ffffff;
+  --surface:        #f4faf9;
+  --surface-alt:    #eef6f5;
+  --border:         #dbe8e6;
+  --danger:         #e35d5d;
+  --danger-tint:    #fdecec;
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --shadow-sm: 0 1px 2px rgba(15, 32, 39, 0.06);
+  --shadow-md: 0 8px 24px rgba(13, 125, 118, 0.12);
+  --shadow-lg: 0 24px 60px rgba(13, 125, 118, 0.18);
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rail-collapsed: 76px;
+  --list-width: 360px;
+    --rail-expanded: 232px;
+
+}
+
+* { box-sizing: border-box; }
+
+.discover-body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--background);
+}
+
+.discover-app {
+  display: flex;
+  height: 100vh;
+  padding-left: var(--rail-collapsed);
+  position: relative;
+}
+
+/* ==========================================================================
+   RESULTS PANEL (left)
+   ========================================================================== */
+.discover-list-panel {
+  width: var(--list-width);
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+.discover-list-header {
+  padding: 20px 20px 14px;
+}
+.discover-list-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.discover-search {
+  margin: 0 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  color: var(--muted);
+  position: relative;
+}
+.discover-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+.discover-search input::placeholder { color: #a7bcba; }
+
+/* small spinner that appears inside the search box while a query is in-flight */
+.search-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+  display: none;
+}
+.discover-search.is-loading .search-spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.discover-results {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.discover-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease;
+}
+.discover-item:hover { background: var(--surface); }
+.discover-item.active { background: var(--primary-tint); border-left-color: var(--primary); }
+
+.discover-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.discover-item-name {
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.discover-item-username {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discover-empty-list,
+.discover-hint {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* ---- initial per-query skeleton rows shown while searching ---- */
+.discover-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+}
+.discover-skeleton-row .sk-avatar,
+.discover-skeleton-row .sk-line {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-alt) 37%, var(--surface) 63%);
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease infinite;
+  border-radius: var(--r-sm);
+}
+.discover-skeleton-row .sk-avatar { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; }
+.discover-skeleton-row .sk-body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.discover-skeleton-row .sk-line { height: 10px; }
+.discover-skeleton-row .sk-line.w60 { width: 60%; }
+.discover-skeleton-row .sk-line.w35 { width: 35%; }
+@keyframes sk-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+/* ---- Show more ---- */
+.show-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 4px;
+}
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border);
+  background: var(--background);
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.show-more-btn:hover { background: var(--primary-tint); border-color: var(--primary-light); }
+.show-more-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+.show-more-btn .btn-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-tint);
+  border-top-color: var(--primary-dark);
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+.show-more-btn.is-loading .btn-spinner { display: inline-block; }
+.show-more-btn.is-loading .btn-label { display: none; }
+
+/* ==========================================================================
+   PROFILE PANEL (right)
+   ========================================================================== */
+.discover-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  position: relative;
+  overflow-y: auto;
+}
+
+.discover-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+  gap: 6px;
+  padding: 40px;
+}
+.discover-empty-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.discover-empty-state h2 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+}
+.discover-empty-state p { max-width: 320px; margin: 0; font-size: 0.9rem; }
+
+.discover-profile-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.discover-loading-dots { display: flex; gap: 6px; }
+.discover-loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: dot-bounce 1s ease-in-out infinite;
+}
+.discover-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.discover-loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ---- Profile ---- */
+.discover-profile {
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 32px 60px;
+}
+
+.discover-profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.discover-avatar-large {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+}
+.discover-avatar-large img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.discover-profile-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 4px 0 0;
+}
+.discover-profile-username {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.discover-section {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+.discover-section-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.discover-bio-text {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
+  white-space: pre-wrap;
+}
+.discover-bio-text.is-empty { color: var(--muted); font-style: italic; }
+
+/* ---- Add friend button ---- */
+.add-friend-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.87rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.add-friend-btn:hover { background: var(--primary-dark); }
+.add-friend-btn:disabled { cursor: not-allowed; opacity: 0.75; }
+
+.add-friend-btn.state-pending { background: var(--surface-alt); color: var(--ink-soft); }
+.add-friend-btn.state-friends { background: var(--surface-alt); color: var(--primary-dark); }
+
+.add-friend-btn .btn-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+.add-friend-btn.is-loading .btn-spinner { display: inline-block; }
+.add-friend-btn.is-loading .btn-label { display: none; }
+
+/* ==========================================================================
+   RECONNECTING STATE
+   Toggle by adding `.is-reconnecting` on .discover-app when the socket/
+   connection drops, and remove it once reconnected. Markup expected:
+
+   <div class="discover-app is-reconnecting">
+     <div class="discover-reconnect-banner">
+       <span class="discover-reconnect-dot"></span>
+       Connection lost — reconnecting…
+       <span class="discover-reconnect-spinner"></span>
+       <button class="discover-reconnect-retry">Retry now</button>
+     </div>
+     ...
+   </div>
+   ========================================================================== */
+.discover-reconnect-banner {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 16px;
+  background: var(--danger-tint);
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+.discover-app.is-reconnecting .discover-reconnect-banner { display: flex; }
+
+.discover-reconnect-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex-shrink: 0;
+  animation: reconnect-pulse 1.1s ease-in-out infinite;
+}
+@keyframes reconnect-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+.discover-reconnect-spinner {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--ink-soft);
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.discover-reconnect-retry {
+  margin-left: 4px;
+  background: none;
+  border: none;
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.discover-reconnect-retry:hover { color: var(--primary); }
+
+/* dim + freeze the panels while disconnected so it visually reads as stale */
+.discover-app.is-reconnecting .discover-list-panel,
+.discover-app.is-reconnecting .discover-main {
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  margin-top: 38px; /* room for the banner so content isn't hidden under it */
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .discover-list-panel { width: 300px; }
+  .discover-profile { padding: 28px 18px 44px; }
+}

@@ -1,0 +1,171 @@
+/* ==========================================================================
+   CHATIFY — groups-responsive.css
+   groups.css ke BAAD load karein. Desktop par sirf bug fixes, mobile
+   (<= 767px) par "group list -> group profile" slide layout.
+   ========================================================================== */
+
+/* ---------- Global bug fixes ----------------------------------------------
+   `display:flex` ki wajah se [hidden] kaam nahi karta tha (group-loading dots
+   hamesha nazar aate the). */
+[hidden],
+.hidden { display: none !important; }
+
+.groups-body { height: 100vh; height: 100dvh; }
+.groups-app  { height: 100vh; height: 100dvh; }
+
+.group-list-panel { min-height: 0; }
+.group-profile-name,
+.group-profile-meta,
+.member-item-name { overflow-wrap: anywhere; }
+.member-item-name { flex-wrap: wrap; }
+
+/* Mobile-only top bar (back arrow) desktop par chhupi rehti hai */
+.group-mobile-topbar { display: none; }
+
+/* ==========================================================================
+   TABLET (768px – 1023px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .group-list-panel { width: 290px; }
+}
+
+/* ==========================================================================
+   TOUCH DEVICES: hover nahi hota, isliye avatar edit buttons hamesha
+   avatar ke corner par dikhao (owner only, JS sirf owner ke liye banata hai)
+   ========================================================================== */
+@media (hover: none), (max-width: 767.98px) {
+  .avatar-edit-overlay {
+    inset: auto;
+    right: -6px;
+    bottom: -6px;
+    width: auto;
+    height: auto;
+    background: transparent;
+    opacity: 1;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .avatar-edit-overlay button {
+    pointer-events: auto;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    border: 2px solid var(--background);
+    box-shadow: var(--shadow-sm);
+  }
+  .avatar-edit-overlay button.remove-avatar-btn { background: var(--danger); }
+}
+
+/* ==========================================================================
+   MOBILE (<= 767px)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+  .groups-app {
+    padding-left: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ----- Do screens, ek time par ek (slide transition) ----- */
+  .group-list-panel,
+  .group-main {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border-right: 0;
+  }
+
+  .group-list-panel {
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+  .group-main {
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+
+  .groups-app.show-profile .group-list-panel {
+    transform: translateX(-22%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+  .groups-app.show-profile .group-main {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+
+  /* ----- Group list ----- */
+  .group-list-header { padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px; }
+  .group-list-header h1 { font-size: 1.25rem; }
+  .group-search { margin: 0 12px 10px; }
+  .group-search input { font-size: 16px; } /* iOS auto-zoom rokne ke liye */
+  .group-item { padding: 12px 16px; gap: 12px; }
+  .group-empty-list { padding: 32px 20px; }
+  /* neeche hamburger button ke liye jagah */
+  .group-list { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ----- Profile screen ----- */
+  .group-mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    flex-shrink: 0;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 4px;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+  .group-back-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+  .group-back-btn:active { background: var(--surface-alt); }
+  .group-mobile-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .group-profile {
+    padding: 22px 14px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+  .group-profile-header { margin-bottom: 20px; }
+  .group-avatar-wrap { width: 112px; height: 112px; }
+  .group-avatar-large { width: 112px; height: 112px; font-size: 2rem; padding: 10px; }
+  .group-profile-name { font-size: 1.25rem; }
+  .group-section { padding: 16px; border-radius: var(--r-md); margin-bottom: 14px; }
+
+  .readonly-notice {
+    width: auto;
+    max-width: 100%;
+    text-align: left;
+    border-radius: var(--r-md);
+  }
+
+  /* bade tap targets */
+  .member-item { padding: 8px 4px; }
+  .remove-member-btn { width: 40px; height: 40px; font-size: 1.05rem; }
+  .remove-member-btn:active { background: var(--danger-tint); color: var(--danger); }
+  .danger-btn { padding: 13px 16px; font-size: 0.92rem; }
+  .group-empty-state { padding: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group-list-panel,
+  .group-main { transition: none !important; }
+}

@@ -1,0 +1,147 @@
+/* ==========================================================================
+   CHATIFY — contacts-responsive.css
+   contacts.css ke BAAD load karein. Desktop par sirf bug fixes, mobile
+   (<= 767px) par "contacts list -> contact profile" slide layout, aur
+   friend-requests modal mobile par bottom sheet ban jata hai.
+   ========================================================================== */
+
+/* ---------- Global bug fixes ----------------------------------------------
+   `display:flex` ki wajah se [hidden] kaam nahi karta
+   (.contact-profile, .contact-empty-state, .modal-overlay sab flex hain). */
+[hidden],
+.hidden { display: none !important; }
+
+.contacts-body { height: 100vh; height: 100dvh; }
+.contacts-app  { height: 100vh; height: 100dvh; }
+
+.contacts-list-panel { min-height: 0; }
+.contact-profile-name,
+.contact-profile-username { overflow-wrap: anywhere; }
+
+/* Chat button ka loading spinner pehle poore panel ke center me aata tha
+   kyunke button `position: relative` nahi tha */
+.profile-action-btn { position: relative; }
+
+/* Close button: desktop par X, mobile par back arrow */
+.icon-btn .icon-back { display: none; }
+
+/* ==========================================================================
+   TABLET (768px – 1023px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .contacts-list-panel { width: 290px; }
+}
+
+/* ==========================================================================
+   MOBILE (<= 767px)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+  .contacts-app {
+    padding-left: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ----- Do screens, ek time par ek (slide transition) ----- */
+  .contacts-list-panel,
+  .contact-main {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border-right: 0;
+  }
+
+  .contacts-list-panel {
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+  .contact-main {
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+
+  .contacts-app.show-profile .contacts-list-panel {
+    transform: translateX(-22%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+  .contacts-app.show-profile .contact-main {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+
+  /* ----- Contacts list ----- */
+  .contacts-list-header { padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px; }
+  .contacts-list-header h1 { font-size: 1.25rem; }
+  .contacts-search { margin: 0 12px 10px; }
+  .contacts-search input { font-size: 16px; } /* iOS auto-zoom rokne ke liye */
+  .contact-item { padding: 12px 16px; gap: 12px; }
+  .empty-list,
+  .contacts-empty-list { padding: 32px 20px; }
+  /* neeche hamburger button ke liye jagah */
+  .contacts-list { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ----- Profile screen ----- */
+  .contact-profile-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    flex-shrink: 0;
+    gap: 6px;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 4px;
+  }
+  .contact-profile-topbar .icon-btn .icon-close { display: none; }
+  .contact-profile-topbar .icon-btn .icon-back  { display: inline-block; font-size: 1.25rem; }
+  .contact-profile-topbar .icon-btn:active { background: var(--surface-alt); }
+  .contact-profile-topbar > span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .contact-profile-hero { padding: 24px 16px 20px; }
+  .contact-profile-name { font-size: 1.2rem; text-align: center; }
+
+  .contact-profile-actions { gap: 8px; padding: 16px 14px; }
+  .profile-action-btn { flex: 1; min-width: 0; padding: 12px 8px; }
+
+  .contact-profile-details {
+    padding: 4px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+  .detail-row { padding: 14px 0; gap: 14px; }
+
+  .contact-empty-state { padding: 24px; }
+
+  /* ----- Friend requests: bottom sheet ----- */
+  .modal-overlay { align-items: flex-end; }
+  .friend-requests-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 85vh;
+    max-height: 85dvh;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    animation: fr-sheet-up 0.3s var(--ease-out);
+  }
+  .friend-requests-modal-header { padding: 14px 12px 14px 20px; }
+  .friend-requests-body {
+    flex: 1;
+    min-height: 0;
+    overscroll-behavior: contain;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .friend-request-item { padding: 12px 16px; }
+  .fr-action-btn { width: 42px; height: 42px; }
+}
+
+@keyframes fr-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contacts-list-panel,
+  .contact-main,
+  .friend-requests-modal { transition: none !important; animation: none !important; }
+}

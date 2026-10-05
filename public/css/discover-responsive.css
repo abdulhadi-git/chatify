@@ -1,0 +1,139 @@
+/* ==========================================================================
+   CHATIFY — discover-responsive.css
+   discover.css ke BAAD load karein. Desktop par sirf bug fixes, mobile
+   (<= 767px) par "results list -> profile" slide layout.
+   ========================================================================== */
+
+/* ---------- Global bug fixes ----------------------------------------------
+   `display:flex` ki wajah se [hidden] kaam nahi karta tha (profile-loading dots
+   hamesha nazar aate the, empty-state hide nahi hoti thi). */
+[hidden],
+.hidden { display: none !important; }
+
+.discover-body { height: 100vh; height: 100dvh; }
+.discover-app  { height: 100vh; height: 100dvh; }
+
+.discover-list-panel { min-height: 0; }
+.discover-profile-name,
+.discover-profile-username { overflow-wrap: anywhere; }
+.discover-bio-text { overflow-wrap: anywhere; }
+
+/* Mobile-only top bar (back arrow) desktop par chhupi rehti hai */
+.discover-mobile-topbar { display: none; }
+
+/* ==========================================================================
+   TABLET (768px – 1023px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .discover-list-panel { width: 290px; }
+}
+
+/* ==========================================================================
+   MOBILE (<= 767px)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+  .discover-app {
+    padding-left: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ----- Do screens, ek time par ek (slide transition) ----- */
+  .discover-list-panel,
+  .discover-main {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border-right: 0;
+  }
+
+  .discover-list-panel {
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+  .discover-main {
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+
+  .discover-app.show-profile .discover-list-panel {
+    transform: translateX(-22%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+  }
+  .discover-app.show-profile .discover-main {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.35s var(--ease-out), visibility 0s linear 0s;
+  }
+
+  /* ----- Search + results ----- */
+  .discover-list-header { padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px; }
+  .discover-list-header h1 { font-size: 1.25rem; }
+  .discover-search { margin: 0 12px 10px; }
+  .discover-search input { font-size: 16px; } /* iOS auto-zoom rokne ke liye */
+  .discover-item { padding: 12px 16px; gap: 12px; }
+  .discover-skeleton-row { padding: 12px 16px; }
+  .discover-hint,
+  .discover-empty-list { padding: 32px 20px; }
+  /* neeche hamburger button ke liye jagah */
+  .discover-results { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ----- Profile screen ----- */
+  .discover-mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    flex-shrink: 0;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 4px;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+  .discover-back-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+  .discover-back-btn:active { background: var(--surface-alt); }
+  .discover-mobile-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .discover-profile {
+    padding: 22px 14px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+  .discover-profile-header { margin-bottom: 18px; }
+  .discover-avatar-large { width: 112px; height: 112px; font-size: 2rem; }
+  .discover-profile-name { font-size: 1.25rem; }
+  .discover-section { padding: 16px; border-radius: var(--r-md); margin-bottom: 14px; }
+  .add-friend-btn { padding: 13px 16px; font-size: 0.92rem; } /* bada tap target */
+  .discover-empty-state { padding: 24px; }
+
+  /* reconnect banner: status bar ke neeche */
+  .discover-reconnect-banner {
+    padding-top: calc(9px + env(safe-area-inset-top, 0px));
+    font-size: 0.78rem;
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discover-list-panel,
+  .discover-main { transition: none !important; }
+}
